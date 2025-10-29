@@ -4,9 +4,71 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calendário da Equipa</title>
+
   <!-- FullCalendar CSS -->
-  https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css
-  <link rel="stylesheet" href="style.cssCalendário Mensal da Equipa</h1>
+  <link href="https://cdn.jsdelivr.net/npm/full.8/index.global.min.css
+
+  <!-- Estilo básico via CDN -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+    header {
+      background: #0077cc;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      padding: 1rem;
+    }
+    #calendar {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+         margin-top: 2rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    button {
+      background: #0077cc;
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      margin: 0.5rem 0.3rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+    @media print {
+      header, #controls {
+        display: none;
+      }
+      #calendar {
+        max-width: 100%;
+        box-shadow: none;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Calendário Mensal da Equipa</h1>
   </header>
 
   <main>
@@ -35,10 +97,111 @@
     </section>
   </main>
 
-  <!-- Scripts -->
-  https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js</script>
+  <!-- Scripts via CDN -->
+  https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js
   https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js</script>
-  https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js</script>
-  script.js</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvasanvas.min.js</script>
+
+  <!-- Script principal -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const calendarEl = document.getElementById('calendar');
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'pt',
+        businessHours: {
+          daysOfWeek: [1, 2, 3, 4, 5],
+          startTime: '07:30',
+          endTime: '18:30',
+        },
+        events: loadEvents(),
+        editable: true,
+        eventClick: function (info) {
+          const newName = prompt('Trocar com quem?', 'Sónia, Rafael ou André');
+          if (newName) {
+            info.event.setProp('title', `Remoto - ${newName}`);
+            saveEvents(calendar.getEvents());
+          }
+        }
+      });
+
+      calendar.render();
+
+      document.getElementById('remoteRequestForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const name = document.getElementById('remoteName').value;
+        const date = document.getElementById('remoteDate').value;
+        calendar.addEvent({
+          title: `Remoto - ${name}`,
+          start: date,
+          allDay: true
+        });
+        saveEvents(calendar.getEvents());
+      });
+
+      function saveEvents(events) {
+        const saved = events.map(e => ({
+          title: e.title,
+          start: e.startStr,
+          allDay: e.allDay
+        }));
+        localStorage.setItem('calendarEvents', JSON.stringify(saved));
+      }
+
+      function loadEvents() {
+        const saved = localStorage.getItem('calendarEvents');
+        if (saved) return JSON.parse(saved);
+        return generateRemoteDays();
+      }
+
+      function generateRemoteDays() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth();
+        const members = ['Sónia', 'Rafael', 'André'];
+        const events = [];
+
+        let memberIndex = 0;
+        for (let day = 1; day <= 31; day++) {
+          const date = new Date(year, month, day);
+          if (date.getDay() >= 1 && date.getDay() <= 5) {
+            if (day % 5 === 0) {
+              events.push({
+                title: `Remoto - ${members[memberIndex % 3]}`,
+                start: date.toISOString().split('T')[0],
+                allDay: true
+              });
+              memberIndex++;
+            }
+          }
+        }
+
+        return events;
+      }
+    });
+
+    function exportToPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text('Calendário da Equipa', 10, 10);
+      const events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
+      events.forEach((e, i) => {
+        doc.text(`${e.start}: ${e.title}`, 10, 20 + i * 10);
+      });
+      doc.save('calendario-equipa.pdf');
+    }
+
+    function printCalendarAsPDF() {
+      html2canvas(document.getElementById('calendar')).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('landscape');
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, 'PNG', 0, 10, pdfWidth, pdfHeight);
+        pdf.save('calendario-visual.pdf');
+      });
+    }
+  </script>
 </body>
 </html>
