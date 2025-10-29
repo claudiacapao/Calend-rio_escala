@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendário da Equipa</title>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css
+</head>
+<body>
+  <header>
+    <h1>Calendário Mensal da Equipa</h1>
+  </header>
+
+  <main>
+    <div id="calendar"></div>
+
+    <section id="controls">
+      <button onclick="exportToPDF()">Exportar para PDF (Texto)</button>
+      <button onclick="printCalendarAsPDF()">Imprimir em PDF (Visual)</button>
+      <button onclick="window.print()">Imprimir Página</button>
+
+      <form id="remoteRequestForm">
+        <h3>Pedido de Dia Remoto</h3>
+        <label>Nome:
+          <select id="remoteName">
+            <option>Sónia</option>
+            <option>Rafael</option>
+            <option>André</option>
+          </select>
+        </label>
+        <label>Data:
+          <input type="date" id="remoteDate" />
+        </label>
+        <button type="submit">Pedir</button>
+      </form>
+    </section>
+  </main>
+
+  https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdfumd.min.js
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html/html2canvas.min.js</script>
+  script.js</script>
+</body>
+</html>
